@@ -2,6 +2,9 @@ FROM python:3.10
 
 RUN apt-get update && apt-get install -y git curl
 
+RUN git clone https://github.com/openai/human-eval.git /human-eval && \
+    pip install /human-eval
+
 WORKDIR /app
 
 COPY requirements.txt .
