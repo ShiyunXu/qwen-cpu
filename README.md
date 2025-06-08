@@ -26,3 +26,11 @@ python3 evaluate.py
 # Results
 
 Final Pass@1: 59.1%
+
+
+## Reproduction
+
+To reproduce the result, simply run:
+```python
+python3 evaluate.py 
+```
