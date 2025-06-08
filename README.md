@@ -23,7 +23,7 @@ python3 inference.py
 python3 evaluate.py 
 ```
 
-# Results
+# Result
 
 Final Pass@1: 59.1%
 
