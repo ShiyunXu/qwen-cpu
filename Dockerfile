@@ -1,19 +1,31 @@
-FROM python:3.10
+FROM ubuntu:20.04
 
-RUN apt-get update && apt-get install -y git curl
-RUN ln -sf /usr/local/bin/python3 /usr/local/bin/python
+ENV DEBIAN_FRONTEND=noninteractive
 
-WORKDIR /app
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      git \
+      build-essential \
+      cmake \
+      wget \
+      python3 \
+      python3-pip \
+      curl \
+      libcurl4-openssl-dev && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN git clone --depth 1 https://github.com/ggml-org/llama.cpp.git /opt/llama.cpp
+WORKDIR /opt/llama.cpp
+RUN cmake -B build -DLLAMA_CURL=ON && \
+    cmake --build build --config Release -j$(nproc)
 
-# Preload the model
-RUN python -c "from transformers import AutoTokenizer, AutoModelForCausalLM; \
-    AutoTokenizer.from_pretrained('Qwen/Qwen2.5-Coder-0.5B-Instruct', trust_remote_code=True); \
-    AutoModelForCausalLM.from_pretrained('Qwen/Qwen2.5-Coder-0.5B-Instruct', trust_remote_code=True)"
+RUN mkdir -p /models/qwen2.5-coder-0.5b && \
+    wget -O /models/qwen2.5-coder-0.5b/qwen2.5-coder-0.5b-instruct-fp16.gguf \
+      https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct-GGUF/resolve/main/qwen2.5-coder-0.5b-instruct-fp16.gguf
 
-COPY serve.py inference.py evaluate.py ./
-
-# inference + evaluation
-CMD ["python", "inference.py"]
+EXPOSE 8080
+WORKDIR /opt/llama.cpp/build/bin
+ENTRYPOINT ["./llama-server", \
+             "--model", "/models/qwen2.5-coder-0.5b/qwen2.5-coder-0.5b-instruct-fp16.gguf", \
+             "-c", "2048", \
+             "--host", "0.0.0.0"]
