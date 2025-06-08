@@ -9,7 +9,7 @@ pip install docker
 Step 1: Build environment
 
 ```python
-pip install https://github.com/ShiyunXu/qwen-cpu.git
+git clone https://github.com/ShiyunXu/qwen-cpu.git
 cd ./qwen-cpu
 docker build -t qwen-cpu .
 python3 serve_docker.py
