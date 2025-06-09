@@ -8,11 +8,16 @@ RUN apt-get update && \
       build-essential \
       cmake \
       wget \
-      python3 \
-      python3-pip \
       curl \
-      libcurl4-openssl-dev && \
+      libcurl4-openssl-dev \
+      python3.8 \
+      python3.8-distutils \
+      python3-pip && \
+    ln -sf /usr/bin/python3.8 /usr/bin/python3 && \
+    python3 -m pip install --no-cache-dir --upgrade pip setuptools && \
     rm -rf /var/lib/apt/lists/*
+
+RUN python3 --version
 
 RUN git clone --depth 1 https://github.com/ggml-org/llama.cpp.git /opt/llama.cpp
 WORKDIR /opt/llama.cpp
