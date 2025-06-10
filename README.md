@@ -22,7 +22,10 @@ pip install git+https://github.com/openai/human-eval.git
 python3 inference.py
 python3 evaluate.py 
 ```
-
+* For Windows systems, run
+```python
+python3 evaluateW.py 
+```
 # Result
 
 Final Pass@1: 59.1%
